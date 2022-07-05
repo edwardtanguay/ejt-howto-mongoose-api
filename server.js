@@ -38,6 +38,14 @@ app.put('/book/:id', async (req, res) => {
 	res.status(200).json({ message: 'replaced book', oldBook, newBook });
 });
 
+app.patch('/book/:id', async (req, res) => {
+	const id = req.params.id;
+	const oldBook = await Book.find({ _id: id });
+	await Book.updateOne({ _id: id }, { $set: { ...req.body } });
+	const newBook = await Book.find({ _id: id });
+	res.status(200).json({ message: 'replaced book', oldBook, newBook });
+});
+
 app.delete('/book/:id', async (req, res) => {
 	const id = req.params.id;
 	const book = await Book.find({ _id: id });
