@@ -16,15 +16,33 @@ app.get('/', (req, res) => {
 app.post('/book', async (req, res) => {
 	const book = new Book(req.body);
 	await book.save();
-	res.status(200).json({ message: 'added book', book });
+	res.status(200).json({ message: 'created book', book });
+});
+
+app.get('/book', async (req, res) => {
+	const books = await Book.find();
+	res.status(200).json({ message: 'fetched all books', books });
+});
+
+app.get('/book/:id', async (req, res) => {
+	const id = req.params.id;
+	const book = await Book.find({ _id: id });
+	res.status(200).json({ message: 'fetched single book', book });
+});
+
+app.put('/book/:id', async (req, res) => {
+	const id = req.params.id;
+	const oldBook = await Book.find({ _id: id });
+	await Book.updateOne({ _id: id }, { $set: { ...req.body } });
+	const newBook = await Book.find({ _id: id });
+	res.status(200).json({ message: 'replaced book', oldBook, newBook });
 });
 
 app.delete('/book/:id', async (req, res) => {
 	const id = req.params.id;
 	const book = await Book.find({ _id: id });
 	await Book.deleteOne({ _id: id });
-	console.log(book);
-	res.status(200).json({ message: 'deleted book', book });
+	res.status(200).json({ message: 'deleted single book', book });
 });
 
 app.listen(port, () => {
